@@ -26,15 +26,45 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let userPickedImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+            
             imageOutlet.image = userPickedImage
             
+            guard let ciimage = CIImage(image: userPickedImage) else {
+                fatalError("not converted")
+            }
+            detect(image: ciimage)
         }
         
         imagePicker.dismiss(animated: true, completion: nil)
         
     }
 
-    
+    func detect (image: CIImage){
+        
+        guard let model = try? VNCoreMLModel(for: Inceptionv3().model) else {
+            fatalError("MLModel error")
+        }
+        
+        let request = VNCoreMLRequest(model: model) { (request, error) in
+            guard let results = request.results as? [VNClassificationObservation] else{
+                fatalError("third error")
+            }
+            print(results)
+        }
+        
+        
+        
+        let handler = VNImageRequestHandler(ciImage: image)
+        
+        do{
+        try handler.perform([request])
+        }catch{
+            print(error)
+            
+        }
+        
+        
+    }
     
     @IBAction func cameraButtonPressed(_ sender: UIBarButtonItem) {
         
