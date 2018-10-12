@@ -49,7 +49,17 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             guard let results = request.results as? [VNClassificationObservation] else{
                 fatalError("third error")
             }
-            print(results)
+            //print(results)
+            if let  firstResult = results.first{
+                
+                if firstResult.identifier.contains("cellphone"){
+                    self.navigationItem.title = "it's a Phone !"
+                }else{
+                    self.navigationItem.title = "not a phone"
+                }
+            }
+            
+            
         }
         
         
